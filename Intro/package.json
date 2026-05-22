@@ -1,0 +1,19 @@
+{
+  "name": "intro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node cot.js --watch"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/genai": "^1.52.0",
+    "axios": "^1.16.0",
+    "dotenv": "^17.4.2"
+  }
+}

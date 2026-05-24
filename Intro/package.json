@@ -5,7 +5,7 @@
   "main": "cot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node cot.js --watch"
+    "dev": "node --watch cot.js"
   },
   "type": "module",
   "keywords": [],
@@ -14,6 +14,7 @@
   "dependencies": {
     "@google/genai": "^1.52.0",
     "axios": "^1.16.0",
+    "cheerio": "^1.2.0",
     "dotenv": "^17.4.2"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "name": "aiagents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avnish-oP/aiAgents.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Avnish-oP/aiAgents/issues"
+  },
+  "homepage": "https://github.com/Avnish-oP/aiAgents#readme"
+}

@@ -4,18 +4,25 @@ import { GoogleGenAI } from "@google/genai";
 import axios from "axios";
 import dotenv from "dotenv";
 import { exec } from "node:child_process";
+import OpenAI from "openai";
 
 dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
+const openrouteApiKey = process.env.OPENROUTE_API_KEY;
 
 if (!apiKey) {
   console.error("Set GEMINI_API_KEY before running this agent.");
   process.exit(1);
 }
 
-const ai = new GoogleGenAI({
-  apiKey,
+const openai = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: openrouteApiKey, // Best practice: Use environment variables
+  defaultHeaders: {
+    "HTTP-Referer": "https://localhost:3000", // Optional: For OpenRouter analytics
+    "X-OpenRouter-Title": "My Local App", // Optional: For OpenRouter analytics
+  },
 });
 
 /* -------------------------------------------------------------------------- */
@@ -169,15 +176,11 @@ function isWeatherQuery(text) {
 function addContinueInstruction(history) {
   history.push({
     role: "user",
-    parts: [
-      {
-        text: `
+    content: `
 Continue the reasoning process.
 Move to the next required step only.
 Do not repeat previous steps.
 `,
-      },
-    ],
   });
 }
 
@@ -240,7 +243,7 @@ OUTPUT step example:
 /*                                   MODEL                                    */
 /* -------------------------------------------------------------------------- */
 
-const model = "gemini-2.5-flash";
+const model = "google/gemma-3-27b-it";
 
 /* -------------------------------------------------------------------------- */
 /*                                    MAIN                                    */
@@ -266,7 +269,7 @@ async function main() {
 
     history.push({
       role: "user",
-      parts: [{ text: prompt }],
+      content: prompt,
     });
 
     const needsWeatherTool = isWeatherQuery(prompt);
@@ -286,20 +289,27 @@ async function main() {
       let response;
 
       try {
-        response = await ai.models.generateContent({
-          model,
-          contents: history,
-          config: {
-            systemInstruction: systemPrompt,
-            temperature: 0.4,
-          },
+        response = await openai.chat.completions.create({
+          model: "google/gemma-3-27b-it",
+
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+
+            ...history,
+          ],
+
+          temperature: 0.2,
+          max_tokens: 2000,
         });
       } catch (error) {
         console.error("Gemini Error:", error.message || String(error));
         break;
       }
 
-      const rawText = getResponseText(response);
+      const rawText = response.choices?.[0]?.message?.content?.trim();
 
       if (!rawText) {
         console.log("Empty model response");
@@ -315,8 +325,8 @@ async function main() {
       }
 
       history.push({
-        role: "model",
-        parts: [{ text: rawText }],
+        role: "assistant",
+        content: rawText,
       });
 
       for (const stepData of parsedSteps) {
@@ -352,15 +362,14 @@ async function main() {
 
             history.push({
               role: "user",
-              parts: [
-                {
-                  text: JSON.stringify({
-                    step: "OBSERVATION",
-                    toolname,
-                    content: `Tool ${toolname} not found`,
-                  }),
-                },
-              ],
+              content: `
+OBSERVATION:
+
+Tool Used: ${toolname}
+
+Tool Result:
+${toolResponse}
+`,
             });
 
             continue;
@@ -380,16 +389,14 @@ async function main() {
 
           history.push({
             role: "user",
-            parts: [
-              {
-                text: JSON.stringify({
-                  step: "OBSERVATION",
-                  toolname,
-                  input,
-                  content: toolResponse,
-                }),
-              },
-            ],
+            content: `
+OBSERVATION:
+
+Tool Used: ${toolname}
+
+Tool Result:
+${toolResponse}
+`,
           });
 
           addContinueInstruction(history);

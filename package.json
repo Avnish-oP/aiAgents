@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Avnish-oP/aiAgents/issues"
   },
-  "homepage": "https://github.com/Avnish-oP/aiAgents#readme"
+  "homepage": "https://github.com/Avnish-oP/aiAgents#readme",
+  "dependencies": {
+    "openai": "^6.39.0"
+  }
 }

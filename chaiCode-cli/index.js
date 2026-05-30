@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { exec } from "node:child_process";
 import * as cheerio from "cheerio";
+import { cloneWebsite } from "./scrapper.js";
 
 dotenv.config();
 
@@ -135,8 +136,10 @@ Rules:
 
 Available tools:
 
-1. SCRAPE_WEBSITE
-Input: website URL
+1. CLONE_WEBSITE
+Input: URL|output_directory (e.g. "https://example.com|./my-clone")
+Downloads the full site including all images, CSS, JS, videos, and fonts.
+Rewrites all URLs to local paths. Saves index.html + assets/ folder.
 
 2. SAVE_TO_FILE
 Input: filename|content
@@ -168,103 +171,7 @@ Example:
 }
 `;
 // Tools
-const scrapeWebsite = async (url) => {
-  try {
-    const response = await axios.get(url);
 
-    const html = response.data;
-
-    const $ = cheerio.load(html);
-
-    // Title
-    const title = $("title").text().trim();
-
-    // Headings
-    const headings = [];
-
-    $("h1, h2, h3").each((i, el) => {
-      const text = $(el).text().trim();
-
-      if (text) {
-        headings.push(text);
-      }
-    });
-
-    // Buttons
-    const buttons = [];
-
-    $("button, a").each((i, el) => {
-      const text = $(el).text().trim();
-
-      if (text && text.length < 40) {
-        buttons.push(text);
-      }
-    });
-
-    // Paragraphs
-    const paragraphs = [];
-
-    $("p").each((i, el) => {
-      const text = $(el).text().trim();
-
-      if (text && text.length > 30 && text.length < 300) {
-        paragraphs.push(text);
-      }
-    });
-
-    // Images
-    const images = [];
-
-    $("img").each((i, el) => {
-      const src = $(el).attr("src");
-
-      if (src) {
-        try {
-          images.push(new URL(src, url).href);
-        } catch {}
-      }
-    });
-
-    // CSS files
-    const cssFiles = [];
-
-    $("link[rel='stylesheet']").each((i, el) => {
-      const href = $(el).attr("href");
-
-      if (href) {
-        try {
-          cssFiles.push(new URL(href, url).href);
-        } catch {}
-      }
-    });
-
-    // JS files
-    const jsFiles = [];
-
-    $("script").each((i, el) => {
-      const src = $(el).attr("src");
-
-      if (src) {
-        try {
-          jsFiles.push(new URL(src, url).href);
-        } catch {}
-      }
-    });
-
-    // Return structured data
-    return JSON.stringify({
-      title,
-      headings: headings.slice(0, 20),
-      buttons: buttons.slice(0, 20),
-      paragraphs: paragraphs.slice(0, 10),
-      images: images.slice(0, 10),
-      cssFiles: cssFiles.slice(0, 10),
-      jsFiles: jsFiles.slice(0, 10),
-    });
-  } catch (error) {
-    return `Error scraping website: ${error.message}`;
-  }
-};
 const saveToFile = async (filename, content) => {
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const filePath = path.join(__dirname, filename);
@@ -294,7 +201,12 @@ const executeCommand = async (command) => {
 };
 
 const ToolMap = {
-  SCRAPE_WEBSITE: scrapeWebsite,
+  CLONE_WEBSITE: async (input) => {
+    const [url, outputDir = "./cloned-output"] = input
+      .split("|")
+      .map((s) => s.trim());
+    return cloneWebsite(url, outputDir);
+  },
   EXECUTE_COMMAND: executeCommand,
   SAVE_TO_FILE: saveToFile,
 };

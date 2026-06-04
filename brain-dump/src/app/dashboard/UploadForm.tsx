@@ -114,7 +114,7 @@ export function UploadForm() {
         throw new Error(data.details ?? data.error ?? "Ingestion failed");
       }
 
-      setSuccess(`✓ Indexed ${data.chunkCount} chunks successfully`);
+      setSuccess(`Indexed ${data.chunkCount} chunks successfully`);
       reset();
       router.refresh(); // re-fetch server component data
     } catch (err) {
@@ -125,19 +125,19 @@ export function UploadForm() {
   };
 
   return (
-    <div className="rounded-xl border border-[#1a1a1a] bg-[#080808] p-6">
-      <h2 className="mb-5 text-sm font-semibold text-white">Add Source</h2>
+    <div className="rounded-xl border border-[var(--app-border)] bg-[var(--app-panel)] p-6 shadow-[var(--app-shadow)]">
+      <h2 className="mb-5 text-sm font-semibold text-[var(--app-text)]">Add Source</h2>
 
       {/* ── Tab Bar ── */}
-      <div className="mb-6 flex gap-1 rounded-lg bg-[#111] p-1">
+      <div className="mb-6 flex gap-1 rounded-lg bg-[var(--app-panel-soft)] p-1">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-all ${
               activeTab === tab.id
-                ? "bg-white text-black"
-                : "text-[#666] hover:text-white"
+                ? "bg-[var(--app-panel)] text-[var(--app-text)] shadow-sm"
+                : "text-[var(--app-muted)] hover:text-[var(--app-text)]"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
@@ -157,23 +157,23 @@ export function UploadForm() {
               onClick={() => fileInputRef.current?.click()}
               className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-10 text-center transition-colors ${
                 dragging
-                  ? "border-white bg-[#111]"
+                  ? "border-[var(--app-brand)] bg-[var(--app-panel-soft)]"
                   : selectedFile
-                    ? "border-[#2a2a2a] bg-[#0f0f0f]"
-                    : "border-[#222] hover:border-[#444]"
+                    ? "border-[var(--app-border-strong)] bg-[var(--app-panel-soft)]"
+                    : "border-[var(--app-border)] hover:border-[var(--app-border-strong)]"
               }`}
             >
-              <span className="material-symbols-outlined mb-3 text-3xl text-[#555]">
+              <span className="material-symbols-outlined mb-3 text-3xl text-[var(--app-accent)]">
                 {selectedFile ? "task" : "cloud_upload"}
               </span>
               {selectedFile ? (
-                <p className="text-sm font-medium text-white">{selectedFile.name}</p>
+                <p className="text-sm font-medium text-[var(--app-text)]">{selectedFile.name}</p>
               ) : (
                 <>
-                  <p className="text-sm text-[#888]">
+                  <p className="text-sm text-[var(--app-muted)]">
                     Drop PDF or DOCX here, or click to browse
                   </p>
-                  <p className="mt-1 text-xs text-[#555]">Max 4MB</p>
+                  <p className="mt-1 text-xs text-[var(--app-subtle)]">Max 4MB</p>
                 </>
               )}
             </div>
@@ -195,14 +195,14 @@ export function UploadForm() {
               placeholder="Title (e.g. 'Meeting Notes')"
               value={textTitle}
               onChange={(e) => setTextTitle(e.target.value)}
-              className="w-full rounded-lg border border-[#222] bg-[#111] px-4 py-2.5 text-sm text-white placeholder-[#555] outline-none focus:border-[#444]"
+              className="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-4 py-2.5 text-sm text-[var(--app-text)] placeholder:text-[var(--app-subtle)] outline-none focus:border-[var(--app-border-strong)]"
             />
             <textarea
               placeholder="Paste your text here..."
               value={textContent}
               onChange={(e) => setTextContent(e.target.value)}
               rows={6}
-              className="w-full resize-none rounded-lg border border-[#222] bg-[#111] px-4 py-2.5 text-sm text-white placeholder-[#555] outline-none focus:border-[#444]"
+              className="w-full resize-none rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-4 py-2.5 text-sm text-[var(--app-text)] placeholder:text-[var(--app-subtle)] outline-none focus:border-[var(--app-border-strong)]"
             />
           </div>
         )}
@@ -218,19 +218,19 @@ export function UploadForm() {
             }
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="w-full rounded-lg border border-[#222] bg-[#111] px-4 py-2.5 text-sm text-white placeholder-[#555] outline-none focus:border-[#444]"
+            className="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-4 py-2.5 text-sm text-[var(--app-text)] placeholder:text-[var(--app-subtle)] outline-none focus:border-[var(--app-border-strong)]"
           />
         )}
 
         {/* ── Feedback ── */}
         {error && (
-          <p className="flex items-center gap-2 rounded-lg border border-red-900/40 bg-red-950/30 px-3 py-2 text-xs text-red-400">
+          <p className="flex items-center gap-2 rounded-lg border border-[var(--app-danger-border)] bg-[var(--app-danger-bg)] px-3 py-2 text-xs text-[var(--app-danger-text)]">
             <span className="material-symbols-outlined text-[16px]">error</span>
             {error}
           </p>
         )}
         {success && (
-          <p className="flex items-center gap-2 rounded-lg border border-green-900/40 bg-green-950/30 px-3 py-2 text-xs text-green-400">
+          <p className="flex items-center gap-2 rounded-lg border border-[var(--app-success-border)] bg-[var(--app-success-bg)] px-3 py-2 text-xs text-[var(--app-success-text)]">
             <span className="material-symbols-outlined text-[16px]">check_circle</span>
             {success}
           </p>
@@ -240,7 +240,7 @@ export function UploadForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-sm font-semibold text-black transition-all hover:bg-[#e5e5e5] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center justify-center gap-2 rounded-lg bg-[var(--app-brand)] py-2.5 text-sm font-semibold text-[var(--app-brand-text)] transition-all hover:bg-[var(--app-brand-hover)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>

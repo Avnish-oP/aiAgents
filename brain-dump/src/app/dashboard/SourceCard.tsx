@@ -18,18 +18,54 @@ export interface SourceCardProps {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; icon: string; color: string }> = {
-  pdf:     { label: "PDF",     icon: "picture_as_pdf", color: "text-red-400 bg-red-950/40 border-red-900/40" },
-  docx:    { label: "DOCX",    icon: "description",    color: "text-blue-400 bg-blue-950/40 border-blue-900/40" },
-  text:    { label: "Text",    icon: "notes",           color: "text-yellow-400 bg-yellow-950/40 border-yellow-900/40" },
-  youtube: { label: "YouTube", icon: "smart_display",  color: "text-red-400 bg-red-950/40 border-red-900/40" },
-  website: { label: "Website", icon: "language",       color: "text-green-400 bg-green-950/40 border-green-900/40" },
+  pdf: {
+    label: "PDF",
+    icon: "picture_as_pdf",
+    color: "text-[var(--app-danger-text)] bg-[var(--app-danger-bg)] border-[var(--app-danger-border)]",
+  },
+  docx: {
+    label: "DOCX",
+    icon: "description",
+    color: "text-[var(--app-info-text)] bg-[var(--app-info-bg)] border-[var(--app-info-border)]",
+  },
+  text: {
+    label: "Text",
+    icon: "notes",
+    color: "text-[var(--app-warning-text)] bg-[var(--app-warning-bg)] border-[var(--app-warning-border)]",
+  },
+  youtube: {
+    label: "YouTube",
+    icon: "smart_display",
+    color: "text-[var(--app-danger-text)] bg-[var(--app-danger-bg)] border-[var(--app-danger-border)]",
+  },
+  website: {
+    label: "Website",
+    icon: "language",
+    color: "text-[var(--app-success-text)] bg-[var(--app-success-bg)] border-[var(--app-success-border)]",
+  },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  pending:    { label: "Pending",    color: "text-yellow-400 bg-yellow-950/30 border-yellow-900/40", icon: "schedule" },
-  processing: { label: "Processing", color: "text-blue-400 bg-blue-950/30 border-blue-900/40",       icon: "progress_activity" },
-  ready:      { label: "Ready",      color: "text-green-400 bg-green-950/30 border-green-900/40",    icon: "check_circle" },
-  failed:     { label: "Failed",     color: "text-red-400 bg-red-950/30 border-red-900/40",          icon: "error" },
+  pending: {
+    label: "Pending",
+    color: "text-[var(--app-warning-text)] bg-[var(--app-warning-bg)] border-[var(--app-warning-border)]",
+    icon: "schedule",
+  },
+  processing: {
+    label: "Processing",
+    color: "text-[var(--app-info-text)] bg-[var(--app-info-bg)] border-[var(--app-info-border)]",
+    icon: "progress_activity",
+  },
+  ready: {
+    label: "Ready",
+    color: "text-[var(--app-success-text)] bg-[var(--app-success-bg)] border-[var(--app-success-border)]",
+    icon: "check_circle",
+  },
+  failed: {
+    label: "Failed",
+    color: "text-[var(--app-danger-text)] bg-[var(--app-danger-bg)] border-[var(--app-danger-border)]",
+    icon: "error",
+  },
 };
 
 export function SourceCard({ source }: SourceCardProps) {
@@ -64,7 +100,7 @@ export function SourceCard({ source }: SourceCardProps) {
   });
 
   return (
-    <div className="group relative rounded-xl border border-[#1a1a1a] bg-[#080808] p-4 transition-all hover:border-[#2a2a2a]">
+    <div className="group relative rounded-xl border border-[var(--app-border)] bg-[var(--app-panel)] p-4 shadow-[var(--app-shadow)] transition-all hover:border-[var(--app-border-strong)]">
       <div className="flex items-start justify-between gap-3">
         {/* Left: icon + info */}
         <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -75,7 +111,7 @@ export function SourceCard({ source }: SourceCardProps) {
 
           {/* Title + meta */}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-white">{source.title}</p>
+            <p className="truncate text-sm font-medium text-[var(--app-text)]">{source.title}</p>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               {/* Type badge */}
               <span className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${type.color}`}>
@@ -92,13 +128,13 @@ export function SourceCard({ source }: SourceCardProps) {
 
               {/* Chunk count */}
               {source.status === "ready" && source.chunkCount > 0 && (
-                <span className="text-[10px] text-[#555]">
+                <span className="text-[10px] text-[var(--app-subtle)]">
                   {source.chunkCount} chunks
                 </span>
               )}
 
               {/* Date */}
-              <span className="text-[10px] text-[#444]">{date}</span>
+              <span className="text-[10px] text-[var(--app-subtle)]">{date}</span>
             </div>
 
             {/* URL preview */}
@@ -107,7 +143,7 @@ export function SourceCard({ source }: SourceCardProps) {
                 href={source.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 block truncate text-[11px] text-[#444] hover:text-[#888] transition-colors"
+                className="mt-1 block truncate text-[11px] text-[var(--app-subtle)] hover:text-[var(--app-muted)] transition-colors"
               >
                 {source.url}
               </a>
@@ -115,7 +151,7 @@ export function SourceCard({ source }: SourceCardProps) {
 
             {/* Error message */}
             {source.status === "failed" && source.errorMessage && (
-              <p className="mt-1.5 rounded bg-red-950/30 px-2 py-1 text-[11px] text-red-400">
+              <p className="mt-1.5 rounded bg-[var(--app-danger-bg)] px-2 py-1 text-[11px] text-[var(--app-danger-text)]">
                 {source.errorMessage}
               </p>
             )}
@@ -126,7 +162,7 @@ export function SourceCard({ source }: SourceCardProps) {
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="flex-shrink-0 rounded-lg p-2 text-[#333] opacity-0 transition-all group-hover:opacity-100 hover:bg-red-950/40 hover:text-red-400 disabled:opacity-50"
+          className="flex-shrink-0 rounded-lg p-2 text-[var(--app-subtle)] opacity-0 transition-all group-hover:opacity-100 hover:bg-[var(--app-danger-bg)] hover:text-[var(--app-danger-text)] disabled:opacity-50"
           title="Delete source"
         >
           {isDeleting ? (

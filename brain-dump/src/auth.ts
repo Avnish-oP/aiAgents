@@ -64,6 +64,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         existing.githubId ??= account.providerAccountId;
         existing.image ??= user.image;
         existing.isVerified = true;
+        if (!existing.userid) {
+          existing.userid = `github:${account.providerAccountId}`;
+        }
         await existing.save();
         return true;
       }

@@ -135,33 +135,38 @@ The user hasn't uploaded documents relevant to this query (or hasn't uploaded an
   // ── Stream ─────────────────────────────────────────────────
   const stream = createUIMessageStream({
     execute: async ({ writer }: { writer: UIMessageStreamWriter }) => {
-      // Write source annotation as a data part (type: "data")
-      if (ragSources.length > 0) {
-        writer.write({
-          type: "data",
-          data: { sources: ragSources },
-        } as unknown as UIMessageChunk<unknown, Record<string, unknown>>);
+      try {
+        // Write source annotation as a data part (type: "data-sources")
+        if (ragSources.length > 0) {
+          writer.write({
+            type: "data-sources",
+            data: { sources: ragSources },
+          } as unknown as UIMessageChunk<unknown, Record<string, unknown>>);
+        }
+
+        // Stream the LLM response
+        const result = streamText({
+          model: google("gemini-2.5-flash"),
+          system: systemPrompt,
+          messages: modelMessages,
+          onFinish: async ({ text }) => {
+            persistMessages(
+              resolvedSessionId!,
+              userQuery,
+              text,
+              ragResult.usedRAG,
+              ragResult.sourceIds,
+            ).catch((err) =>
+              console.error("[chat] Session persist failed:", err),
+            );
+          },
+        });
+
+        writer.merge(result.toUIMessageStream());
+      } catch (err) {
+        console.error("[chat] execute stream error:", err);
+        throw err;
       }
-
-      // Stream the LLM response
-      const result = streamText({
-        model: google("gemini-2.5-flash"),
-        system: systemPrompt,
-        messages: modelMessages,
-        onFinish: async ({ text }) => {
-          persistMessages(
-            resolvedSessionId!,
-            userQuery,
-            text,
-            ragResult.usedRAG,
-            ragResult.sourceIds,
-          ).catch((err) =>
-            console.error("[chat] Session persist failed:", err),
-          );
-        },
-      });
-
-      writer.merge(result.toUIMessageStream());
     },
   });
 

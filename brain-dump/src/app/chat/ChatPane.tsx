@@ -152,39 +152,49 @@ export function ChatPane({
   const [input, setInput] = useState("");
   const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  // chatId is its OWN state — never derived inline from sessionId.
+  // This is the only thing that controls whether useChat creates a new Chat instance.
+  const [chatId, setChatId] = useState<string>("new");
   const locallyCreatedSessionIdRef = useRef<string | null>(null);
 
   // ── Load existing session history ─────────────────────────
   useEffect(() => {
     if (!sessionId) {
-      // Defer to next microtask to avoid setState-in-effect lint
-      Promise.resolve().then(() => setInitialMessages([]));
+      // User clicked "New Chat" — reset to a fresh Chat instance.
+      setInitialMessages([]);
+      setChatId(`new-${Date.now()}`);
       return;
     }
 
     if (locallyCreatedSessionIdRef.current === sessionId) {
+      // This ID came back via X-Session-Id from OUR own request.
+      // The stream is still active — do NOT touch chatId or the Chat
+      // instance will be recreated and the stream will be killed.
       return;
     }
 
-    // Load history asynchronously
+    // User navigated to an existing session — load history first,
+    // THEN update chatId so useChat creates the Chat with correct messages.
     const load = async () => {
       setLoadingHistory(true);
       try {
         const r = await fetch(`/api/sessions/${sessionId}`);
         const data: { messages?: { role: string; content: string }[] } = await r.json();
-        if (Array.isArray(data.messages)) {
-          const mapped: UIMessage[] = data.messages.map(
-            (m, i) => ({
+        const mapped: UIMessage[] = Array.isArray(data.messages)
+          ? data.messages.map((m, i) => ({
               id: `hist-${i}`,
               role: m.role as "user" | "assistant",
               parts: [{ type: "text" as const, text: m.content }],
               content: m.content,
-            }),
-          );
-          setInitialMessages(mapped);
-        }
+            }))
+          : [];
+        // React 18 batches both of these into one re-render, so when useChat
+        // sees the new chatId it also sees the correct initialMessages.
+        setInitialMessages(mapped);
+        setChatId(sessionId);
       } catch {
-        // silently ignore
+        setInitialMessages([]);
+        setChatId(sessionId);
       } finally {
         setLoadingHistory(false);
       }
@@ -193,19 +203,16 @@ export function ChatPane({
   }, [sessionId]);
 
   // ── Create stable transport once ──────────────────────────
-  // ctxRef holds mutable values that are only updated in effects, never read during render
   const ctxRef = useRef({
     sessionId,
     onSessionCreated,
     sessionNotified: false,
   });
 
-  // Keep ctx in sync via effects (never during render)
   useEffect(() => { ctxRef.current.sessionId = sessionId; }, [sessionId]);
   useEffect(() => { ctxRef.current.onSessionCreated = onSessionCreated; }, [onSessionCreated]);
   useEffect(() => { ctxRef.current.sessionNotified = false; }, [sessionId]);
 
-  // eslint-disable-next-line react-hooks/refs -- ctxRef access is inside a callback, not during render
   const [transport] = useState(() => {
     const ctx = ctxRef;
     return new DefaultChatTransport({
@@ -216,6 +223,9 @@ export function ChatPane({
         const newId = response.headers.get("X-Session-Id");
         if (newId && !ctx.current.sessionId && !ctx.current.sessionNotified) {
           ctx.current.sessionNotified = true;
+          // Mark as locally created BEFORE calling onSessionCreated, so the
+          // useEffect guard fires synchronously on the same render cycle and
+          // skips the setChatId call — keeping the Chat instance alive.
           locallyCreatedSessionIdRef.current = newId;
           ctx.current.onSessionCreated(newId, "New Chat");
         }
@@ -224,14 +234,14 @@ export function ChatPane({
     });
   });
 
-  const { messages, sendMessage, stop, status, regenerate, setMessages, error } = useChat({
+  // chatId only changes when we explicitly call setChatId above.
+  // It never changes just because sessionId prop changes — that was the bug.
+  const { messages, sendMessage, stop, status, regenerate, error } = useChat({
+    id: chatId,
     messages: initialMessages,
     transport,
   });
 
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages, setMessages]);
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -366,6 +376,11 @@ export function ChatPane({
         <div className="mx-auto w-full max-w-3xl px-4 pt-3">
           <div className="rounded-lg border border-[var(--app-danger-border)] bg-[var(--app-danger-bg)] px-3 py-2 text-sm text-[var(--app-danger-text)]">
             The response could not be streamed. Please try again.
+            {error.message && (
+              <span className="block mt-1 font-mono text-xs opacity-80">
+                {error.message}
+              </span>
+            )}
           </div>
         </div>
       )}

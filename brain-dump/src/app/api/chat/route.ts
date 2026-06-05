@@ -23,6 +23,7 @@ import {
   createUIMessageStreamResponse,
   type UIMessage,
   type UIMessageStreamWriter,
+  type UIMessageChunk,
 } from "ai";
 import { auth } from "@/auth";
 import { retrieve } from "@/lib/retrieval/retrieve";
@@ -32,6 +33,7 @@ import { Source } from "@/models/Source";
 import mongoose from "mongoose";
 
 export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
 const BASE_SYSTEM_PROMPT = `You are Brain Dump, an AI-powered personal knowledge base assistant.
 You help users understand and query their uploaded documents, PDFs, YouTube transcripts, and web content.
@@ -136,11 +138,9 @@ The user hasn't uploaded documents relevant to this query (or hasn't uploaded an
       // Write source annotation as a data part (type: "data")
       if (ragSources.length > 0) {
         writer.write({
-          type: "data-sources",
-          id: "sources",
+          type: "data",
           data: { sources: ragSources },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+        } as unknown as UIMessageChunk<unknown, Record<string, unknown>>);
       }
 
       // Stream the LLM response

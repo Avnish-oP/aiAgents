@@ -19,11 +19,13 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+import { Brain } from "lucide-react";
+
 function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2 group">
-      <div className="w-7 h-7 bg-[var(--app-brand)] rounded-md flex items-center justify-center transition-transform duration-300 group-hover:rotate-90">
-        <div className="w-2 h-2 bg-[var(--app-brand-text)] rounded-sm" />
+    <Link href="/" className="flex items-center gap-2.5 group">
+      <div className="flex size-7 items-center justify-center rounded-md bg-[var(--app-brand)] text-[var(--app-brand-text)] transition-transform duration-300 group-hover:scale-105">
+        <Brain className="size-4" />
       </div>
       <span className="text-sm font-semibold tracking-tight text-[var(--app-text)]">
         Brain Dump

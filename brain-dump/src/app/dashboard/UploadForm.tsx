@@ -100,11 +100,15 @@ export function UploadForm() {
         });
       } else {
         // youtube or website
-        if (!url.trim()) throw new Error("Please enter a URL");
+        let finalUrl = url.trim();
+        if (!finalUrl) throw new Error("Please enter a URL");
+        if (!/^https?:\/\//i.test(finalUrl)) {
+          finalUrl = `https://${finalUrl}`;
+        }
         response = await fetch("/api/ingest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: activeTab, url }),
+          body: JSON.stringify({ type: activeTab, url: finalUrl }),
         });
       }
 

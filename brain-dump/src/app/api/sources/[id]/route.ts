@@ -32,3 +32,32 @@ export async function GET(_req: Request, { params }: Params) {
 
   return NextResponse.json(source);
 }
+
+import { deleteBySourceId } from "@/lib/vector/client";
+
+export async function DELETE(_req: Request, { params }: Params) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { id } = await params;
+
+  await connectDB();
+
+  const source = await Source.findOneAndDelete({
+    _id: id,
+    userId: session.user.id,
+  });
+
+  if (!source) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  try {
+    await deleteBySourceId(session.user.id, id);
+  } catch (error) {
+    console.error("[sources] Failed to delete vectors:", error);
+  }
+
+  return NextResponse.json({ success: true });
+}

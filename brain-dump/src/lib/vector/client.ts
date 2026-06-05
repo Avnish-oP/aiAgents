@@ -44,8 +44,8 @@ export interface QueryMatch {
 // We cast our typed ChunkPayload at read time instead.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const vectorIndex = new Index<any>({
-  url: process.env.UPSTASH_VECTOR_REST_URL,
-  token: process.env.UPSTASH_VECTOR_REST_TOKEN,
+  url: process.env.UPSTASH_VECTOR_REST_URL.replace(/^"|"$/g, ""),
+  token: process.env.UPSTASH_VECTOR_REST_TOKEN.replace(/^"|"$/g, ""),
 });
 
 /**
@@ -100,18 +100,32 @@ export async function deleteBySourceId(
 ): Promise<void> {
   const ns = vectorIndex.namespace(userId);
 
-  // Query with zero-vector + metadata filter to fetch matching IDs
-  const results = await ns.query({
-    vector: new Array(768).fill(0),
-    topK: 10000,
-    includeMetadata: false,
-    filter: `sourceId = '${sourceId}'`,
-  });
+  let hasMore = true;
+  let iterations = 0;
 
-  const ids = (results as Array<{ id: string | number }>).map((r) =>
-    String(r.id),
-  );
-  if (ids.length > 0) {
-    await ns.delete(ids);
+  while (hasMore && iterations < 50) {
+    iterations++;
+    // Query with zero-vector + metadata filter to fetch matching IDs
+    const results = await ns.query({
+      vector: new Array(768).fill(0),
+      topK: 1000,
+      includeMetadata: false,
+      filter: `sourceId = '${sourceId}'`,
+    });
+
+    const ids = (results as Array<{ id: string | number }>).map((r) =>
+      String(r.id),
+    );
+
+    if (ids.length > 0) {
+      await ns.delete(ids);
+    }
+
+    if (ids.length < 1000) {
+      hasMore = false;
+    } else {
+      // Delay to allow Upstash indexes to reflect the deletion
+      await new Promise((r) => setTimeout(r, 500));
+    }
   }
 }

@@ -15,6 +15,11 @@ export async function loadPdf(
   buffer: Buffer,
   filename = "document.pdf",
 ): Promise<{ text: string; title: string }> {
+  // Polyfill DOMMatrix for Node environments (required by pdf.js inside pdf-parse)
+  if (typeof globalThis.DOMMatrix === "undefined") {
+    (globalThis as unknown as { DOMMatrix: unknown }).DOMMatrix = class DOMMatrix {};
+  }
+
   const { PDFParse } = await import("pdf-parse");
   // Pass the PDF data via the constructor (load() is private in v2)
   const parser = new PDFParse({ data: new Uint8Array(buffer) });

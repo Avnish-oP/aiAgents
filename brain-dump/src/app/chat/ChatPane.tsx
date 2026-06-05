@@ -91,14 +91,15 @@ function EmptyState({
 function getSourcesFromMessage(message: UIMessage): SourceAnnotation[] {
   const sources: SourceAnnotation[] = [];
   for (const part of message.parts) {
+    const p = part as unknown as { type: string; data?: { sources?: SourceAnnotation[] } };
     if (
-      isDataUIPart(part) &&
-      part.data &&
-      typeof part.data === "object" &&
-      "sources" in part.data &&
-      Array.isArray((part.data as { sources: SourceAnnotation[] }).sources)
+      (p.type === "data" || isDataUIPart(part)) &&
+      p.data &&
+      typeof p.data === "object" &&
+      "sources" in p.data &&
+      Array.isArray(p.data.sources)
     ) {
-      sources.push(...(part.data as { sources: SourceAnnotation[] }).sources);
+      sources.push(...p.data.sources);
     }
   }
   return sources;
@@ -304,7 +305,7 @@ export function ChatPane({
                           <MessageContent
                             className={
                               message.role === "user"
-                                ? "bg-[var(--app-brand)] text-[var(--app-brand-text)]"
+                                ? "bg-[var(--app-panel-soft)] border border-[var(--app-border)] text-[var(--app-text)]"
                                 : "text-[var(--app-text)]"
                             }
                           >
@@ -316,11 +317,7 @@ export function ChatPane({
                               </div>
                             ) : (
                               <MessageResponse
-                                className={
-                                  message.role === "user"
-                                    ? "text-[var(--app-brand-text)]"
-                                    : "text-[var(--app-text)]"
-                                }
+                                className="text-[var(--app-text)]"
                                 parseIncompleteMarkdown={false}
                               >
                                 {part.text}
@@ -338,7 +335,7 @@ export function ChatPane({
                         {message.role === "assistant" &&
                           isLastMessage &&
                           !isLoading && (
-                            <MessageActions className="ml-12 mt-1">
+                            <MessageActions className="mt-1">
                               <MessageAction
                                 label="Copy"
                                 onClick={() =>
@@ -383,11 +380,7 @@ export function ChatPane({
             value={input}
             placeholder="Ask anything..."
             onChange={(e) => setInput(e.currentTarget.value)}
-            className="pr-12 min-h-[44px] max-h-32 !text-[var(--app-text)] placeholder:!text-[var(--app-subtle)] caret-[var(--app-brand)]"
-            style={{
-              color: "var(--app-text)",
-              caretColor: "var(--app-brand)",
-            }}
+            className="pr-12 min-h-[44px] max-h-32 text-[var(--app-text)] placeholder:text-[var(--app-subtle)] caret-[var(--app-brand)]"
           />
           <PromptInputSubmit
             status={isLoading ? "streaming" : "ready"}

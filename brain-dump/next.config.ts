@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   // Required for pdf-parse and youtubei.js which use Node.js built-ins
-  serverExternalPackages: ["pdf-parse", "youtubei.js", "mammoth"],
+  serverExternalPackages: ["pdf-parse", "pdfjs-dist", "youtubei.js", "mammoth"],
 };
 
 export default nextConfig;

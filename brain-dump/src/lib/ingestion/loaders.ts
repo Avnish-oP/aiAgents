@@ -99,7 +99,15 @@ export async function loadWebsite(
   const axios = (await import("axios")).default;
   const { load } = await import("cheerio");
 
-  const { data: html } = await axios.get<string>(url, {
+  // Sanitize malformed URLs like "ww.example.com" or "http:/ww.example.com"
+  let sanitizedUrl = url.trim();
+  sanitizedUrl = sanitizedUrl.replace(/^(https?):\/+([^\/])/i, "$1://$2");
+  if (!/^https?:\/\//i.test(sanitizedUrl)) {
+    sanitizedUrl = "https://" + sanitizedUrl;
+  }
+  const finalUrl = new URL(sanitizedUrl).href;
+
+  const { data: html } = await axios.get<string>(finalUrl, {
     timeout: 15000,
     headers: {
       "User-Agent":

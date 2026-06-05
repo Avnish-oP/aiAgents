@@ -9,23 +9,53 @@
  */
 
 // ─────────────────────────────────────────────────────────────
-// PDF  — pdf-parse (v2 class-based API)
+// PDF  — pdfjs-dist (direct, no separate worker — safe for serverless)
 // ─────────────────────────────────────────────────────────────
 export async function loadPdf(
   buffer: Buffer,
   filename = "document.pdf",
 ): Promise<{ text: string; title: string }> {
-  // Polyfill DOMMatrix for Node environments (required by pdf.js inside pdf-parse)
+  // Polyfill DOMMatrix for Node environments (required by pdfjs internals)
   if (typeof globalThis.DOMMatrix === "undefined") {
     (globalThis as unknown as { DOMMatrix: unknown }).DOMMatrix = class DOMMatrix {};
   }
 
-  const { PDFParse } = await import("pdf-parse");
-  // Pass the PDF data via the constructor (load() is private in v2)
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  const result = await parser.getText();   // returns TextResult with .text
+  // Import pdfjs-dist legacy build directly (avoids the worker ESM shim in pdf-parse
+  // that tries to dynamic-import pdf.worker.mjs at an absolute path that doesn't exist
+  // inside Vercel / Lambda serverless bundles).
+  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+
+  // Disable the worker entirely so pdfjs runs in the main thread.
+  // Setting workerSrc to an empty data-URL makes it skip the fetch/import
+  // and fall back to the built-in fake-worker (synchronous, in-process).
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(buffer),
+    // Prevent pdfjs from trying to resolve relative URLs in the serverless env
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true,
+  });
+
+  const pdfDoc = await loadingTask.promise;
+  const numPages = pdfDoc.numPages;
+  const textParts: string[] = [];
+
+  for (let i = 1; i <= numPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item) => ("str" in item ? item.str : ""))
+      .join(" ");
+    textParts.push(pageText);
+    page.cleanup();
+  }
+
+  await pdfDoc.destroy();
+
   const title = filename.replace(/\.pdf$/i, "");
-  return { text: result.text ?? "", title };
+  return { text: textParts.join("\n\n").trim(), title };
 }
 
 // ─────────────────────────────────────────────────────────────

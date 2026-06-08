@@ -1,19 +1,3 @@
-/**
- * lib/ingestion/embedder.ts
- *
- * Generates 768-dim embeddings using Google's gemini-embedding-001 model.
- *
- * Model: gemini-embedding-001
- *   - Default output: 3072 dims
- *   - We truncate to 768 via Matryoshka Representation Learning (MRL)
- *     using providerOptions.google.outputDimensionality = 768
- *   - This keeps vectors compatible with our Upstash index (768 dims)
- *   - Available on v1beta (the SDK default — no custom baseURL needed)
- *
- * Chunks are processed in batches of 20.
- * Retries once with 3s backoff on 429.
- */
-
 import { google } from "@ai-sdk/google";
 import { embedMany, embed } from "ai";
 
@@ -27,11 +11,6 @@ const EMBEDDING_PROVIDER_OPTIONS = {
   },
 };
 
-/**
- * Embed an array of text chunks into 768-dim vectors.
- * @param chunks - Array of plain text strings
- * @returns number[][] — one 768-dim vector per chunk
- */
 export async function embedChunks(chunks: string[]): Promise<number[][]> {
   const allEmbeddings: number[][] = [];
 

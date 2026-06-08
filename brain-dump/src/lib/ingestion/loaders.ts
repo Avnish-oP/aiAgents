@@ -1,16 +1,4 @@
-/**
- * lib/ingestion/loaders.ts
- *
- * Per-type text extractors.
- * Uses direct libraries (pdf-parse, mammoth, cheerio+axios, youtubei.js)
- * instead of @langchain/community to avoid Next.js fs-module conflicts.
- *
- * Each function returns { text: string, title: string }.
- */
 
-// ─────────────────────────────────────────────────────────────
-// PDF  — unpdf (pdfjs with worker bundled inline, serverless-safe)
-// ─────────────────────────────────────────────────────────────
 export async function loadPdf(
   buffer: Buffer,
   filename = "document.pdf",
@@ -27,9 +15,7 @@ export async function loadPdf(
   return { text: text.trim(), title };
 }
 
-// ─────────────────────────────────────────────────────────────
-// DOCX  — mammoth
-// ─────────────────────────────────────────────────────────────
+
 export async function loadDocx(
   buffer: Buffer,
   filename = "document.docx",
@@ -40,9 +26,6 @@ export async function loadDocx(
   return { text: result.value ?? "", title };
 }
 
-// ─────────────────────────────────────────────────────────────
-// Plain text — passthrough
-// ─────────────────────────────────────────────────────────────
 export function loadText(
   content: string,
   title: string,
@@ -50,9 +33,6 @@ export function loadText(
   return { text: content.trim(), title };
 }
 
-// ─────────────────────────────────────────────────────────────
-// YouTube — youtubei.js transcript
-// ─────────────────────────────────────────────────────────────
 export async function loadYoutube(
   url: string,
 ): Promise<{ text: string; title: string }> {
@@ -89,9 +69,7 @@ function extractYoutubeId(url: string): string | null {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Website — axios + cheerio
-// ─────────────────────────────────────────────────────────────
+
 export async function loadWebsite(
   url: string,
 ): Promise<{ text: string; title: string }> {

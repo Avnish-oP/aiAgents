@@ -1,16 +1,3 @@
-/**
- * lib/vector/client.ts
- *
- * Thin wrapper around @upstash/vector.
- *
- * Namespace strategy: one namespace per userId — complete user isolation.
- * Vector ID format:   {sourceId}-{chunkIndex}
- * Payload:            { chunkText, sourceId, title, type, chunkIndex }
- *
- * Index config (Upstash console):
- *   Dimensions: 768  |  Metric: Cosine
- */
-
 import { Index } from "@upstash/vector";
 
 if (
@@ -40,9 +27,6 @@ export interface QueryMatch {
   payload: ChunkPayload;
 }
 
-// Use untyped Index to avoid the Dict constraint clash.
-// We cast our typed ChunkPayload at read time instead.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const vectorIndex = new Index<any>({
   url: process.env.UPSTASH_VECTOR_REST_URL.replace(/^"|"$/g, ""),
   token: process.env.UPSTASH_VECTOR_REST_TOKEN.replace(/^"|"$/g, ""),

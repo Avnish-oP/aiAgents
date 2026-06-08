@@ -1,19 +1,3 @@
-/**
- * lib/retrieval/retrieve.ts
- *
- * Basic RAG retrieval orchestrator (Phase 1 — no HyDE / multi-query yet).
- *
- * Steps:
- *  1. Embed user query → 768-dim vector
- *  2. Query Upstash Vector in user's namespace → top-5 chunks
- *  3. Relevance gate → if top score < 0.5, skip RAG context
- *  4. Format context from retrieved chunks
- *  5. Return { context, usedRAG, sourceIds }
- *
- * Streaming and history persistence are handled by the /api/chat route
- * so this function stays pure and testable.
- */
-
 import { embedSingle } from "@/lib/ingestion/embedder";
 import { queryVector, type QueryMatch } from "@/lib/vector/client";
 

@@ -129,19 +129,19 @@ export function UploadForm() {
   };
 
   return (
-    <div className="rounded-xl border border-[var(--app-border)] bg-[var(--app-panel)] p-6 shadow-[var(--app-shadow)]">
-      <h2 className="mb-5 text-sm font-semibold text-[var(--app-text)]">Add Source</h2>
+    <div className="rounded-xl border border-(--app-border) bg-(--app-panel) p-6 shadow-(--app-shadow)">
+      <h2 className="mb-5 text-sm font-semibold text-(--app-text)">Add Source</h2>
 
       {/* ── Tab Bar ── */}
-      <div className="mb-6 flex gap-1 rounded-lg bg-[var(--app-panel-soft)] p-1">
+      <div className="mb-6 flex gap-1 rounded-lg bg-(--app-panel-soft) p-1">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-all ${
               activeTab === tab.id
-                ? "bg-[var(--app-panel)] text-[var(--app-text)] shadow-sm"
-                : "text-[var(--app-muted)] hover:text-[var(--app-text)]"
+                ? "bg-(--app-panel) text-(--app-text) shadow-sm"
+                : "text-(--app-muted) hover:text-(--app-text)"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
@@ -161,23 +161,23 @@ export function UploadForm() {
               onClick={() => fileInputRef.current?.click()}
               className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-10 text-center transition-colors ${
                 dragging
-                  ? "border-[var(--app-brand)] bg-[var(--app-panel-soft)]"
+                  ? "border-(--app-brand) bg-(--app-panel-soft)"
                   : selectedFile
-                    ? "border-[var(--app-border-strong)] bg-[var(--app-panel-soft)]"
-                    : "border-[var(--app-border)] hover:border-[var(--app-border-strong)]"
+                    ? "border-(--app-border-strong) bg-(--app-panel-soft)"
+                    : "border-(--app-border) hover:border-(--app-border-strong)"
               }`}
             >
-              <span className="material-symbols-outlined mb-3 text-3xl text-[var(--app-accent)]">
+              <span className="material-symbols-outlined mb-3 text-3xl text-(--app-accent)">
                 {selectedFile ? "task" : "cloud_upload"}
               </span>
               {selectedFile ? (
-                <p className="text-sm font-medium text-[var(--app-text)]">{selectedFile.name}</p>
+                <p className="text-sm font-medium text-(--app-text)">{selectedFile.name}</p>
               ) : (
                 <>
-                  <p className="text-sm text-[var(--app-muted)]">
+                  <p className="text-sm text-(--app-muted)">
                     Drop PDF or DOCX here, or click to browse
                   </p>
-                  <p className="mt-1 text-xs text-[var(--app-subtle)]">Max 4MB</p>
+                  <p className="mt-1 text-xs text-(--app-subtle)">Max 4MB</p>
                 </>
               )}
             </div>
@@ -199,14 +199,14 @@ export function UploadForm() {
               placeholder="Title (e.g. 'Meeting Notes')"
               value={textTitle}
               onChange={(e) => setTextTitle(e.target.value)}
-              className="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-4 py-2.5 text-sm text-[var(--app-text)] placeholder:text-[var(--app-subtle)] outline-none focus:border-[var(--app-border-strong)]"
+              className="w-full rounded-lg border border-(--app-border) bg-(--app-panel-soft) px-4 py-2.5 text-sm text-(--app-text) placeholder:text-(--app-subtle) outline-none focus:border-(--app-border-strong)"
             />
             <textarea
               placeholder="Paste your text here..."
               value={textContent}
               onChange={(e) => setTextContent(e.target.value)}
               rows={6}
-              className="w-full resize-none rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-4 py-2.5 text-sm text-[var(--app-text)] placeholder:text-[var(--app-subtle)] outline-none focus:border-[var(--app-border-strong)]"
+              className="w-full resize-none rounded-lg border border-(--app-border) bg-(--app-panel-soft) px-4 py-2.5 text-sm text-(--app-text) placeholder:text-(--app-subtle) outline-none focus:border-(--app-border-strong)"
             />
           </div>
         )}
@@ -222,19 +222,19 @@ export function UploadForm() {
             }
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="w-full rounded-lg border border-[var(--app-border)] bg-[var(--app-panel-soft)] px-4 py-2.5 text-sm text-[var(--app-text)] placeholder:text-[var(--app-subtle)] outline-none focus:border-[var(--app-border-strong)]"
+            className="w-full rounded-lg border border-(--app-border) bg-(--app-panel-soft) px-4 py-2.5 text-sm text-(--app-text) placeholder:text-(--app-subtle) outline-none focus:border-(--app-border-strong)"
           />
         )}
 
         {/* ── Feedback ── */}
         {error && (
-          <p className="flex items-center gap-2 rounded-lg border border-[var(--app-danger-border)] bg-[var(--app-danger-bg)] px-3 py-2 text-xs text-[var(--app-danger-text)]">
+          <p className="flex items-center gap-2 rounded-lg border border-(--app-danger-border) bg-(--app-danger-bg) px-3 py-2 text-xs text-(--app-danger-text)">
             <span className="material-symbols-outlined text-[16px]">error</span>
             {error}
           </p>
         )}
         {success && (
-          <p className="flex items-center gap-2 rounded-lg border border-[var(--app-success-border)] bg-[var(--app-success-bg)] px-3 py-2 text-xs text-[var(--app-success-text)]">
+          <p className="flex items-center gap-2 rounded-lg border border-(--app-success-border) bg-(--app-success-bg) px-3 py-2 text-xs text-(--app-success-text)">
             <span className="material-symbols-outlined text-[16px]">check_circle</span>
             {success}
           </p>
@@ -244,7 +244,7 @@ export function UploadForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex items-center justify-center gap-2 rounded-lg bg-[var(--app-brand)] py-2.5 text-sm font-semibold text-[var(--app-brand-text)] transition-all hover:bg-[var(--app-brand-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center justify-center gap-2 rounded-lg bg-(--app-brand) py-2.5 text-sm font-semibold text-(--app-brand-text) transition-all hover:bg-(--app-brand-hover) disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>

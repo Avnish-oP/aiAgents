@@ -1,9 +1,3 @@
-/**
- * lib/ingestion/chunker.ts
- *
- * Wraps LangChain's RecursiveCharacterTextSplitter.
- * Returns an array of plain string chunks ready for embedding.
- */
 
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 

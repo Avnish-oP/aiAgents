@@ -23,6 +23,7 @@ export const personas: Record<string, PersonaConfig> = {
       website: "https://hiteshchoudhary.com",
       linkedin: "https://linkedin.com/in/hiteshchoudhary",
     },
+    youtubeChannelIds: ["UCuIU3-57n7H8J299vP5H-Lg"],
     colorTheme: {
       primary: "#F59E0B",
       primaryGlow: "rgba(245, 158, 11, 0.15)",
@@ -110,6 +111,7 @@ export const personas: Record<string, PersonaConfig> = {
       website: "https://www.piyushgarg.dev",
       linkedin: "https://linkedin.com/in/piyushgarg195",
     },
+    youtubeChannelIds: ["UCtHm9ai5zSb-yfRnnUBopAg"],
     colorTheme: {
       primary: "#06B6D4",
       primaryGlow: "rgba(6, 182, 212, 0.15)",

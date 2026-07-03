@@ -1,10 +1,20 @@
 export type PersonaId = "hitesh" | "piyush";
 
+export interface YouTubeVideo {
+  videoId: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  publishedAt: string;
+}
+
 export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  thinking?: string;
   timestamp: Date;
+  videos?: YouTubeVideo[];
 }
 
 export interface PersonaConfig {
@@ -15,6 +25,7 @@ export interface PersonaConfig {
   description: string;
   greeting: string;
   suggestedQuestions: string[];
+  youtubeChannelIds: string[];
   socialLinks: {
     youtube?: string;
     twitter?: string;
@@ -39,4 +50,17 @@ export interface ChatRequest {
 export interface ChatResponse {
   content: string;
   error?: string;
+}
+
+// CoT State Machine types
+export interface CotToolCall {
+  name: string;
+  args: Record<string, string>;
+}
+
+export interface CotResponse {
+  state: "THINKING" | "TOOL_CALL" | "OUTPUT";
+  thinking?: string;
+  tool?: CotToolCall;
+  response?: string;
 }

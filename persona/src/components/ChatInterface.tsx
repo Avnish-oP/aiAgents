@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Message, PersonaConfig, PersonaId } from "@/types";
+import { Message, PersonaConfig, PersonaId, YouTubeVideo } from "@/types";
 import { personas } from "@/lib/personas";
 import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
@@ -137,6 +137,30 @@ export default function ChatInterface({
 
               try {
                 const parsed = JSON.parse(data);
+
+                // Handle video cards event (sent before text stream)
+                if (parsed.videos) {
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === aiMessageId
+                        ? { ...m, videos: parsed.videos as YouTubeVideo[] }
+                        : m
+                    )
+                  );
+                  continue;
+                }
+                
+                if (parsed.thinking) {
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === aiMessageId
+                        ? { ...m, thinking: (m.thinking || "") + parsed.thinking }
+                        : m
+                    )
+                  );
+                  continue;
+                }
+
                 if (parsed.content) {
                   accumulated += parsed.content;
                   setMessages((prev) =>

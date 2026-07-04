@@ -72,7 +72,7 @@ async function callLLMStreaming(
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000",
       "X-Title": "Persona Chat",
     },
     body: JSON.stringify({
@@ -96,11 +96,11 @@ export async function POST(req: NextRequest) {
   try {
     const body: ChatRequest = await req.json();
     const { messages, persona: personaId } = body;
-    const apiKey = process.env.OPENROUTER_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY?.trim();
     
-    if (!apiKey) {
+    if (!apiKey || apiKey === "undefined" || apiKey === "null") {
       return new Response(
-        JSON.stringify({ error: "OpenRouter API key not configured" }),
+        JSON.stringify({ error: "OpenRouter API key not configured or invalid" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }

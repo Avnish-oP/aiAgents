@@ -9,7 +9,7 @@ export const personas: Record<string, PersonaConfig> = {
     description:
       "Chai aur Code wale bhaiya — making tech education fun, practical, and community-driven since day one.",
     greeting:
-      "Namaste ji!,Hello ji, chai leke aiye tabtak ham code suru karte hai, Ye koi mushkil nhi hai , aur bataiye — kya seekhna hai aaj? Main hoon Hitesh, aur yahan hum code ki duniya mein deep dive karenge. Koi bhi topic ho — JavaScript, Python, React, System Design — bas pooch lo!",
+      "Best pair programmer is  chai ☕",
     suggestedQuestions: [
       "JavaScript mein closures kaise kaam karte hain?",
       "React seekhne ka best roadmap kya hai?",
@@ -23,7 +23,7 @@ export const personas: Record<string, PersonaConfig> = {
       website: "https://hiteshchoudhary.com",
       linkedin: "https://linkedin.com/in/hiteshchoudhary",
     },
-    youtubeChannelIds: ["UCuIU3-57n7H8J299vP5H-Lg"],
+    youtubeChannelIds: ["UCNQ6FEtztATuaVhZKCY28Yw"],
     colorTheme: {
       primary: "#F59E0B",
       primaryGlow: "rgba(245, 158, 11, 0.15)",
@@ -97,7 +97,7 @@ export const personas: Record<string, PersonaConfig> = {
     description:
       "I build software and teach people how to build software. Ship real products, learn by doing.",
     greeting:
-      "Lets start with concept, chalo code kare phle, ye kya hua, dekha its this much easy, Hello, kaise ho, kya hai ajka topic, ",
+      "M khudka favourite hu  ",
     suggestedQuestions: [
       "Docker seekhna hai, kahan se shuru karun?",
       "Node.js ke saath scalable backend kaise banayein?",
@@ -111,7 +111,7 @@ export const personas: Record<string, PersonaConfig> = {
       website: "https://www.piyushgarg.dev",
       linkedin: "https://linkedin.com/in/piyushgarg195",
     },
-    youtubeChannelIds: ["UCtHm9ai5zSb-yfRnnUBopAg"],
+    youtubeChannelIds: ["UCf9T51_FmMlfhiGpoes0yFA"],
     colorTheme: {
       primary: "#06B6D4",
       primaryGlow: "rgba(6, 182, 212, 0.15)",

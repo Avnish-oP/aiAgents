@@ -61,9 +61,9 @@ Here are the search results:
 
 ## INSTRUCTIONS:
 - Respond naturally in your persona style (Hinglish, catchphrases, etc.)
-- Mention 1-2 of the most relevant videos naturally in your answer
-- Format video references as: 📺 **Video Title** — and tell them to check it out on your channel
-- Do NOT use JSON format — respond with plain text only
+- Mention 1-2 of the most relevant videos from the results above naturally in your answer
+- Format video references EXACTLY like this markdown link: 📺 **[Video Title](https://youtube.com/watch?v=VIDEO_ID)**
+- CRITICAL: ONLY use the exact Video Title and VIDEO_ID provided in the search results above. DO NOT invent or guess YouTube links!
 - First answer the user's question in your style, THEN suggest the relevant videos at the end
 - If no videos were found, just answer normally without mentioning videos
 `;

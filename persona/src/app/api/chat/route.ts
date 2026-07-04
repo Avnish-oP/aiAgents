@@ -96,7 +96,16 @@ export async function POST(req: NextRequest) {
   try {
     const body: ChatRequest = await req.json();
     const { messages, persona: personaId } = body;
-    const apiKey = process.env.OPENROUTER_API_KEY?.trim();
+    let apiKey = process.env.OPENROUTER_API_KEY;
+    if (apiKey) {
+      // Foolproof extraction: if the user accidentally pasted "KEY=VALUE" into Vercel, this extracts just the key
+      const match = apiKey.match(/sk-or-[A-Za-z0-9_-]+/);
+      if (match) {
+        apiKey = match[0];
+      } else {
+        apiKey = apiKey.replace(/^"|"$/g, "").replace(/^'|'$/g, "").replace(/^Bearer\s+/i, "").replace(/[^\x20-\x7E]/g, "").trim();
+      }
+    }
     
     if (!apiKey || apiKey === "undefined" || apiKey === "null") {
       return new Response(
@@ -257,10 +266,11 @@ export async function POST(req: NextRequest) {
               }
             }
           }
-        } catch (err) {
+        } catch (err: any) {
           console.error("Stream error:", err);
+          const maskedKey = apiKey ? `${apiKey.substring(0, 3)}...${apiKey.slice(-3)} (len: ${apiKey.length})` : "missing";
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ error: "Stream error occurred" })}\n\n`)
+            encoder.encode(`data: ${JSON.stringify({ error: err?.message || "Stream error occurred", debugKey: maskedKey })}\n\n`)
           );
         } finally {
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));

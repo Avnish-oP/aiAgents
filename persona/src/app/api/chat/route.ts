@@ -104,6 +104,10 @@ export async function POST(req: NextRequest) {
         apiKey = match[0];
       } else {
         apiKey = apiKey.replace(/^"|"$/g, "").replace(/^'|'$/g, "").replace(/^Bearer\s+/i, "").replace(/[^\x20-\x7E]/g, "").trim();
+        // If the user accidentally copied ONLY the hex string part (missing the sk-or-v1- prefix), fix it for them
+        if (apiKey.length === 64 && !apiKey.startsWith("sk-or-v1-")) {
+          apiKey = "sk-or-v1-" + apiKey;
+        }
       }
     }
     

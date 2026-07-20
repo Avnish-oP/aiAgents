@@ -1,0 +1,7 @@
+openai
+fastapi
+uvicorn
+httpx
+pydantic
+typing-extensions
+pydantic-settings
